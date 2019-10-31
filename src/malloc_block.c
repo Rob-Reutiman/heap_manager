@@ -99,8 +99,7 @@ bool	block_merge(Block *dst, Block *src) {
  *
  * @param   block   Pointer to block to split into two separate blocks.
  * @param   size    Desired size of the first block after split.
- * @return  Pointer to original block if the split was successfully or NULL if a
- * split was not possible.
+ * @return  Pointer to original block (regardless if it was split or not). 
  **/
 Block * block_split(Block *block, size_t size) {
     // TODO: Implement block split
