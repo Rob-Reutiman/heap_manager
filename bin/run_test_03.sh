@@ -70,7 +70,7 @@ merges:      0
 requested:   5115
 heap size:   3976
 internal:    0.25
-external:    42.86
+external:    66.67
 EOF
 }
 

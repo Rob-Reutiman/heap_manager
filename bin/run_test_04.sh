@@ -30,7 +30,7 @@ merges:      3
 requested:   126
 heap size:   288
 internal:    68.06
-external:    42.86
+external:    7.14
 EOF
 }
 
@@ -50,7 +50,7 @@ merges:      3
 requested:   126
 heap size:   288
 internal:    44.44
-external:    33.33
+external:    32.14
 EOF
 }
 
@@ -70,7 +70,7 @@ merges:      3
 requested:   126
 heap size:   288
 internal:    44.44
-external:    50.00
+external:    37.50
 EOF
 }
 
