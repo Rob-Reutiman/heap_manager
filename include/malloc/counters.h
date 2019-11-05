@@ -8,7 +8,7 @@
 
 /* Use buffer to format string and write to specified file descriptor */
 #define fdprintf(fd, b, s, ...) \
-    sprintf(buffer, s, ##__VA_ARGS__); write(fd, b, strlen(b));
+    sprintf(b, s, ##__VA_ARGS__); write(fd, b, strlen(b));
 
 /* Counters */
 
