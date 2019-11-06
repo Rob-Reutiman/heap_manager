@@ -46,7 +46,16 @@ void init_counters() {
  **/
 double  internal_fragmentation() {
     // TODO: Implement internal fragmentation computation
-    return 0;
+    
+    double intern_frag = 0;
+    
+    while(FreeList) {
+        inter_frag += 
+    }
+
+    intern_frag = intern_frag / HeapSize * 100;
+
+    return intern_frag;
 }
 
 /**
@@ -60,6 +69,17 @@ double  internal_fragmentation() {
  **/
 double  external_fragmentation() {
     // TODO: Implement external fragmentation computation
+    
+    double max = 0;
+    //double free_mem = 0;
+        
+    while(FreeList) {
+        extern_frag += 
+    }
+
+    double extern_frag = (1 - (max / free_mem)) * 100;
+
+
     return 0;
 }
 

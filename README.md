@@ -4,7 +4,7 @@ This is [Project 04] of [CSE.30341.FA19].
 
 ## Student
 
-- Domer McDomerson (dmcdomer@nd.edu)
+- Robert Reutiman (rreutima@nd.edu)
 
 ## Brainstorming
 

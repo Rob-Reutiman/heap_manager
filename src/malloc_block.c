@@ -42,20 +42,30 @@ Block *	block_allocate(size_t size) {
 }
 
 /**
- * Attempt to release memory used by block to heap:
+ * Attempt to release memory used by block to heap if:
  *
- *  1. If the block is at the end of the heap.
- *  2. The block capacity meets the trim threshold.
+ *  1. the block is at the end of the heap.
+ *  2. the block capacity meets the trim threshold.
  *
  * @param   block   Pointer to block to release.
  * @return  Whether or not the release completed successfully.
  **/
 bool	block_release(Block *block) {
-    // TODO: Implement block release
-    // size_t allocated = 0;
-    // Counters[BLOCKS]--;
-    // Counters[SHRINKS]++;
-    // Counters[HEAP_SIZE] -= allocated;
+    //TODO: Implement block release
+    
+    // trim threshold??, at end of heap??
+
+    size_t allocated = sizeof(Block) + block->capacity;
+    
+    block = block_detach(block);
+
+    if(sbrk(-allocated) == SBRK_FAILURE) {
+        return false;
+    }
+
+    Counters[BLOCKS]--;
+    Counters[SHRINKS]++;
+    Counters[HEAP_SIZE] -= allocated;
     return true;
 }
 
@@ -66,7 +76,16 @@ bool	block_release(Block *block) {
  * @return  Pointer to detached block.
  **/
 Block * block_detach(Block *block) {
-    // TODO: Detach block from neighbors by updating previous and next block
+    // Detach block from neighbors by updating previous and next block
+    
+    // Handle neighbors
+    block->prev->next = block->next;
+    block->next->prev = block->prev;
+
+    // Handle block
+    block->prev = block;
+    block->next = block;
+
     return block;
 }
 
@@ -75,7 +94,7 @@ Block * block_detach(Block *block) {
  *
  *  1. Compute end of destination and start of source.
  *
- *  2. If they both match, then merge source into destionation by giving the
+ *  2. If they both match, then merge source into destination by giving the
  *  destination all of the memory allocated to source.
  *
  * @param   dst     Destination block we are merging into.
@@ -83,9 +102,21 @@ Block * block_detach(Block *block) {
  * @return  Whether or not the merge completed successfully.
  **/
 bool	block_merge(Block *dst, Block *src) {
-    // TODO: Implement block merge
-    // Counters[MERGES]++;
-    // Counters[BLOCKS]--;
+    // Implement block merge
+
+    if(src == dst+dst->capacity) {
+
+        src = block_detach(src);
+
+        dst->capacity += sizeof(Block) + src->capacity;
+        dst->size += src->size;
+
+        Counters[MERGES]++;
+        Counters[BLOCKS]--;
+        return true;
+
+    }
+    
     return false;
 }
 
@@ -102,9 +133,25 @@ bool	block_merge(Block *dst, Block *src) {
  * @return  Pointer to original block (regardless if it was split or not). 
  **/
 Block * block_split(Block *block, size_t size) {
-    // TODO: Implement block split
-    // Counters[SPLITS]++;
-    // Counters[BLOCKS]++;
+    // Implement block split
+    
+    if(block->capacity >= (sizeof(Block) + ALIGN(size)) ) {
+
+        Block* new = block_allocate(0);
+
+        // Updating new block
+        new->prev = block;
+        new->next = block->next;
+        new->capacity = block->capacity - ALIGN(size);
+
+        // Updating split block
+        block->next = new;
+        block->capacity = ALIGN(size);
+
+        Counters[SPLITS]++;
+        Counters[BLOCKS]++;
+    }
+
     return block;
 }
 
