@@ -7,6 +7,8 @@
 
 #include "malloc/counters.h"
 #include "malloc/freelist.h"
+#include <unistd.h>
+#include <string.h>
 
 /* Global Variables */
 
@@ -21,8 +23,16 @@ Block FreeList = {-1, -1, &FreeList, &FreeList};
  * @return  Pointer to existing block (otherwise NULL if none are available).
  **/
 Block * free_list_search_ff(size_t size) {
-    // TODO: Implement first fit algorithm
+    // Implement first fit algorithm
+
+    for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
+        if(curr->capacity >= size) {
+    	    return curr;
+        }
+    }
+
     return NULL;
+
 }
 
 /**
@@ -32,8 +42,22 @@ Block * free_list_search_ff(size_t size) {
  * @return  Pointer to existing block (otherwise NULL if none are available).
  **/
 Block * free_list_search_bf(size_t size) {
-    // TODO: Implement best fit algorithm
+    // Implement best fit algorithm
+    
+    Block * optimal = FreeList.next;
+
+    for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
+        if(curr->size < optimal->size && curr->size >= size) {
+            optimal = curr;
+        }
+    }
+
+    if(optimal->size >= size) {
+        return optimal;
+    }
+
     return NULL;
+    
 }
 
 /**
@@ -43,7 +67,20 @@ Block * free_list_search_bf(size_t size) {
  * @return  Pointer to existing block (otherwise NULL if none are available).
  **/
 Block * free_list_search_wf(size_t size) {
-    // TODO: Implement worst fit algorithm
+    // Implement worst fit algorithm
+ 
+    Block * worst = FreeList.next;
+
+    for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
+        if(curr->capacity > worst->capacity && curr->capacity >= size) {
+            worst = curr;
+        }   
+    } 
+
+    if(worst->capacity >= size) {
+        return worst;
+    }
+
     return NULL;
 }
 
@@ -84,7 +121,31 @@ Block * free_list_search(size_t size) {
  * @param   block   Pointer to block to insert into free list.
  **/
 void	free_list_insert(Block *block) {
-    // TODO: Implement free list insertion
+    // Implement free list insertion
+
+    Block *curr = FreeList.next;
+	
+    while(curr != &FreeList) {
+	if(block_merge(curr, block)) {
+	    return;
+	}
+        if(block_merge(block, curr) ) {
+            block->prev = curr->prev;
+            block->next = curr->next;
+
+            block->prev->next = block;
+            block->next->prev = block;
+
+            return;
+        }
+        curr = curr->next;
+    }
+
+    block->prev = FreeList.prev;
+    block->next = &FreeList;
+		
+    FreeList.prev->next = block;
+    
 }
 
 /**
@@ -92,8 +153,16 @@ void	free_list_insert(Block *block) {
  * @return  Length of the free list.
  **/
 size_t  free_list_length() {
-    // TODO: Implement free list length
-    return 0;
+    // Implement free list length
+
+    size_t length = 0;
+
+    for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
+        length++;	
+    }
+
+    return length;
+
 }
 
 /* vim: set expandtab sts=4 sw=4 ts=8 ft=c: */

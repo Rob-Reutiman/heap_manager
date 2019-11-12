@@ -51,22 +51,24 @@ Block *	block_allocate(size_t size) {
  * @return  Whether or not the release completed successfully.
  **/
 bool	block_release(Block *block) {
-    //TODO: Implement block release
+    // Implement block release
     
-    // trim threshold??, at end of heap??
+    if( block->capacity + sizeof(Block) >= TRIM_THRESHOLD && (intptr_t)block->data+block->capacity == (intptr_t)sbrk(0) ) {
 
-    size_t allocated = sizeof(Block) + block->capacity;
+        size_t allocated = sizeof(Block) + block->capacity;
     
-    block = block_detach(block);
+        if(sbrk(-allocated) == SBRK_FAILURE) {
+            return false;
+        }
 
-    if(sbrk(-allocated) == SBRK_FAILURE) {
-        return false;
-    }
+        Counters[BLOCKS]--;
+        Counters[SHRINKS]++;
+        Counters[HEAP_SIZE] -= allocated;
 
-    Counters[BLOCKS]--;
-    Counters[SHRINKS]++;
-    Counters[HEAP_SIZE] -= allocated;
-    return true;
+        return true;
+    } 
+
+    return false;
 }
 
 /**
@@ -104,19 +106,16 @@ Block * block_detach(Block *block) {
 bool	block_merge(Block *dst, Block *src) {
     // Implement block merge
 
-    if(src == dst+dst->capacity) {
-
-        src = block_detach(src);
+    if( (intptr_t)src == ((intptr_t)(dst->data) + dst->capacity) ) {
 
         dst->capacity += sizeof(Block) + src->capacity;
-        dst->size += src->size;
 
         Counters[MERGES]++;
         Counters[BLOCKS]--;
         return true;
 
     }
-    
+ 
     return false;
 }
 
@@ -135,21 +134,28 @@ bool	block_merge(Block *dst, Block *src) {
 Block * block_split(Block *block, size_t size) {
     // Implement block split
     
-    if(block->capacity >= (sizeof(Block) + ALIGN(size)) ) {
+    if(block->capacity > (sizeof(Block) + ALIGN(size)) ) {
 
-        Block* new = block_allocate(0);
+        Block *new_block = (Block*)block->data + ALIGN(size);
 
         // Updating new block
-        new->prev = block;
-        new->next = block->next;
-        new->capacity = block->capacity - ALIGN(size);
+        new_block->prev = block;
+        new_block->next = block->next;
+        new_block->next->prev = new_block;
+        new_block->capacity = block->capacity - sizeof(Block) - ALIGN(size);
+        new_block->size = 0;
 
         // Updating split block
-        block->next = new;
+        block->next = new_block;
         block->capacity = ALIGN(size);
 
         Counters[SPLITS]++;
         Counters[BLOCKS]++;
+
+    } else {
+
+        block->size += size;
+
     }
 
     return block;

@@ -45,17 +45,23 @@ void init_counters() {
  * @return  Percentage of internal fragmentation in heap.
  **/
 double  internal_fragmentation() {
-    // TODO: Implement internal fragmentation computation
+    // Implement internal fragmentation computation
     
     double intern_frag = 0;
-    
-    while(FreeList) {
-        inter_frag += 
+    double HeapSize = 0;
+
+
+    for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
+        intern_frag += (curr->capacity - curr->size);
+        HeapSize += curr->capacity + sizeof(Block);
+    } 
+
+    if(HeapSize > 0) {
+        intern_frag = intern_frag / HeapSize * 100; 
+        return intern_frag;
+    } else {
+        return 0;
     }
-
-    intern_frag = intern_frag / HeapSize * 100;
-
-    return intern_frag;
 }
 
 /**
@@ -68,19 +74,25 @@ double  internal_fragmentation() {
  * @return  Percentage of external fragmentation in heap.
  **/
 double  external_fragmentation() {
-    // TODO: Implement external fragmentation computation
+    // Implement external fragmentation computation
     
     double max = 0;
-    //double free_mem = 0;
+    double free_mem = 0;
         
-    while(FreeList) {
-        extern_frag += 
+    for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
+        free_mem += curr->capacity;
+        if(curr->capacity > max) {
+            max = curr->capacity;
+        }
+    } 
+
+    if(free_mem > 0) {
+        double extern_frag = (1 - (max / free_mem)) * 100;
+        return extern_frag;
+    } else {
+        return 0;
     }
 
-    double extern_frag = (1 - (max / free_mem)) * 100;
-
-
-    return 0;
 }
 
 /**
