@@ -70,19 +70,20 @@ Block * free_list_search_bf(size_t size) {
 Block * free_list_search_wf(size_t size) {
     // Implement worst fit algorithm
  
-    Block * worst = FreeList.next;
+    Block * worst = NULL;
 
     for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
-        if(curr->capacity > worst->capacity && curr->capacity >= size) {
-            worst = curr;
-        }   
+        if(worst == NULL && curr->size >= size) {
+           worst = curr;
+        }       
+        if(worst) {
+            if(curr->size > worst->size && curr->size >= size) {
+                worst = curr;
+            } 
+        }  
     } 
 
-    if(worst->capacity >= size) {
-        return worst;
-    }
-
-    return NULL;
+    return worst;
 }
 
 /**
@@ -134,8 +135,8 @@ void	free_list_insert(Block *block) {
             block->prev = curr->prev;
             block->next = curr->next;
 
-            block->prev->next = block;
-            block->next->prev = block;
+            curr->prev->next = block;
+            curr->next->prev = block;
 
             return;
         }
@@ -146,6 +147,7 @@ void	free_list_insert(Block *block) {
     block->next = &FreeList;
 		
     FreeList.prev->next = block;
+    FreeList.prev = block;
     
 }
 

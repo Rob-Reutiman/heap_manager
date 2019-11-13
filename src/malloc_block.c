@@ -106,7 +106,7 @@ Block * block_detach(Block *block) {
 bool	block_merge(Block *dst, Block *src) {
     // Implement block merge
 
-    if( (intptr_t)src == ((intptr_t)(dst->data) + dst->capacity) ) {
+    if( (intptr_t)src == (intptr_t)(dst->data + dst->capacity) ) {
 
         dst->capacity += sizeof(Block) + src->capacity;
 
@@ -133,28 +133,32 @@ bool	block_merge(Block *dst, Block *src) {
  **/
 Block * block_split(Block *block, size_t size) {
     // Implement block split
+    if(!block) {
+        return NULL;
+    }
     
     if(block->capacity > (sizeof(Block) + ALIGN(size)) ) {
 
-        Block *new_block = (Block*)block->data + ALIGN(size);
+        Block *new_block = (Block*) (block->data + ALIGN(size) );
 
         // Updating new block
         new_block->prev = block;
         new_block->next = block->next;
         new_block->next->prev = new_block;
         new_block->capacity = block->capacity - sizeof(Block) - ALIGN(size);
-        new_block->size = 0;
+        new_block->size = new_block->capacity;
 
         // Updating split block
         block->next = new_block;
         block->capacity = ALIGN(size);
+        block->size = size;
 
         Counters[SPLITS]++;
         Counters[BLOCKS]++;
 
     } else {
 
-        block->size += size;
+        block->size = size;
 
     }
 

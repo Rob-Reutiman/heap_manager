@@ -47,21 +47,19 @@ void init_counters() {
 double  internal_fragmentation() {
     // Implement internal fragmentation computation
     
-    double intern_frag = 0;
-    double HeapSize = 0;
-
+    double sum = 0;
 
     for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
-        intern_frag += (curr->capacity - curr->size);
-        HeapSize += curr->capacity + sizeof(Block);
+        sum += (curr->capacity - curr->size);
     } 
 
-    if(HeapSize > 0) {
-        intern_frag = intern_frag / HeapSize * 100; 
+    if(Counters[HEAP_SIZE] > 0) {
+        double intern_frag = ( sum / (double)Counters[HEAP_SIZE] ) * 100; 
         return intern_frag;
-    } else {
-        return 0;
-    }
+    } 
+       
+    return 0;
+    
 }
 
 /**

@@ -88,19 +88,35 @@ brainstorming questions are not required.
 
 1. When does **internal fragmentation** and **external fragmentation** occur?
 
-    > RESPONSE REQUIRED (limit to a **few sentences**)
+	Internal fragmentation occurs when our allocator hands out chunks of memory
+	larger than requested. Any unasked for (and thus unused) space is internal
+	fragmentation.
+
+	External Fragmentation occurs when there is not enough contigous space in 
+	a single block although we have enough space overall for an allocaiton.
 
 2. Considering the following questions, discuss which heap management strategy
    is the **best** (based on your implementation and your testing or
    experimentation):
    
     - Which heap management strategy requires the least amount of heap space?
+
+	Best Fit
     
     - Which heap management strategy was the fastest?
 
+	First Fit
+
     - Which heap management strategy exhibited the least fragmentation?
     
-    > RESPONSE REQUIRED (limit to a **few sentences**)
+	Worst fit exhibits the least external fragmentation.
+	Best fit exhibits the least internal fragmentation.
+	
+
+	In my opinion, the best strategy is Best Fit simply because it has the 
+	most notable advantages. It minimizes both heap space external fragmentation,
+	which, compared to our other approaches, appears to be have the most upside.
+
 
 ## Errata
 
