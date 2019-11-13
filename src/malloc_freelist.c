@@ -44,19 +44,20 @@ Block * free_list_search_ff(size_t size) {
 Block * free_list_search_bf(size_t size) {
     // Implement best fit algorithm
     
-    Block * optimal = FreeList.next;
+    Block *optimal = NULL;
 
     for(Block *curr = FreeList.next; curr != &FreeList; curr = curr->next) {
-        if(curr->size < optimal->size && curr->size >= size) {
+        if(optimal == NULL && curr->size >= size) {
             optimal = curr;
+        }
+        if(optimal) {
+            if(curr->size < optimal->size && curr->size >= size) {
+                optimal = curr;
+            }
         }
     }
 
-    if(optimal->size >= size) {
-        return optimal;
-    }
-
-    return NULL;
+    return optimal;
     
 }
 
