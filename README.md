@@ -1,4 +1,4 @@
-# Operating Systems Project 04: Heap Management
+# OS Project 04
 
 For this project, I created a library that interacts with the OS to perform heap management on behalf of a user process. 
 
